@@ -94,7 +94,7 @@ pub fn show(app: &mut LightcraftApp, ctx: &egui::Context) {
         Dialog::Merge { opts } => opts.title(),
         Dialog::Settings { .. } => "Settings",
         Dialog::ConfirmDelete { .. } => "Delete Photos",
-        Dialog::About => "About LightCraft",
+        Dialog::About => "About Epic Light",
         Dialog::Shortcuts => "Keyboard Shortcuts",
     }
     .to_string();

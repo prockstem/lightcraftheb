@@ -1,14 +1,14 @@
-# Flatpak manifest for LightCraft, ready for a Flathub submission.
+# Flatpak manifest for Epic Light, ready for a Flathub submission.
 #
 # Flatpak builds run offline, so the crate sources must be vendored first. From the repo root:
 #
 #   curl -fsSLO https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
 #   python3 flatpak-cargo-generator.py Cargo.lock -o packaging/linux/flatpak/cargo-sources.json
-#   flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/ai.storyteller.lightcraft.yml
-#   flatpak run ai.storyteller.lightcraft
+#   flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/io.github.prockstem.epiclight.yml
+#   flatpak run io.github.prockstem.epiclight
 #
 # For Flathub, replace the `dir` source with a `git` source pinned to a release tag and commit.
-id: ai.storyteller.lightcraft
+id: io.github.prockstem.epiclight
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
@@ -36,14 +36,14 @@ modules:
     build-commands:
       - cargo --offline build --release --locked -p lightcraft
       - install -Dm755 target/release/lightcraft /app/bin/lightcraft
-      - install -Dm644 packaging/linux/ai.storyteller.lightcraft.desktop /app/share/applications/ai.storyteller.lightcraft.desktop
-      - install -Dm644 packaging/linux/ai.storyteller.lightcraft.mime.xml /app/share/mime/packages/ai.storyteller.lightcraft.xml
+      - install -Dm644 packaging/linux/io.github.prockstem.epiclight.desktop /app/share/applications/io.github.prockstem.epiclight.desktop
+      - install -Dm644 packaging/linux/io.github.prockstem.epiclight.mime.xml /app/share/mime/packages/io.github.prockstem.epiclight.xml
       - mkdir -p /app/share/icons && cp -R assets/app-icon/hicolor /app/share/icons/
       - >-
         version=$(awk '/^\[/{p=($0=="[workspace.package]");next} p&&$1=="version"{gsub(/[" ]/,"",$3);print $3;exit}' Cargo.toml);
         install -d /app/share/metainfo;
         sed -e "s/@VERSION@/$version/" -e "s/@DATE@/$(date -u +%Y-%m-%d)/"
-        packaging/linux/ai.storyteller.lightcraft.metainfo.xml.in > /app/share/metainfo/ai.storyteller.lightcraft.metainfo.xml
+        packaging/linux/io.github.prockstem.epiclight.metainfo.xml.in > /app/share/metainfo/io.github.prockstem.epiclight.metainfo.xml
     sources:
       - type: dir
         path: ../../..

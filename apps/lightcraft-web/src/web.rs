@@ -670,7 +670,7 @@ pub fn start() {
             }
             Err(e) => {
                 log::error!("LightCraft failed to start: {e:?}");
-                set_status(&format!("LightCraft failed to start: {e:?}"));
+                set_status(&format!("Epic Light failed to start: {e:?}"));
             }
         }
     });

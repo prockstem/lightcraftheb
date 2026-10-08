@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build, sign and package LightCraft for Windows.
+  Build, sign and package Epic Light for Windows.
 
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release):
@@ -52,7 +52,7 @@ New-Item -ItemType Directory -Force -Path $Dist | Out-Null
 if (-not $env:LIGHTCRAFT_BUILD_SHA) { $env:LIGHTCRAFT_BUILD_SHA = (git -C $Root rev-parse HEAD 2>$null) }
 if (-not $env:LIGHTCRAFT_BUILD_DATE) { $env:LIGHTCRAFT_BUILD_DATE = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
 
-Write-Output "LightCraft $Version for Windows $Arch ($Target)"
+Write-Output "Epic Light $Version for Windows $Arch ($Target)"
 
 if (-not $SkipBuild) {
   # Static CRT: no VC++ redistributable needed. Scoped to the target so host build scripts and

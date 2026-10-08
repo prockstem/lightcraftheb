@@ -77,7 +77,7 @@
   "{name} Off": "{name} כבוי",
   "{name} On": "{name} פעיל",
   "{name} — double-click to reset it": "{name} — לחיצה כפולה לאיפוס",
-  "{n} change{} saved in memory but not written to disk: {e}\nLightCraft retries automatically; quitting now would lose {}.": "שינויים שנשמרו בזיכרון אבל לא נכתבו לדיסק: {n}{:.0}: {e}\nLightCraft מנסה שוב אוטומטית; יציאה עכשיו תגרום לאובדן שלהם{:.0}.",
+  "{n} change{} saved in memory but not written to disk: {e}\nEpic Light retries automatically; quitting now would lose {}.": "שינויים שנשמרו בזיכרון אבל לא נכתבו לדיסק: {n}{:.0}: {e}\nEpic Light מנסה שוב אוטומטית; יציאה עכשיו תגרום לאובדן שלהם{:.0}.",
   "{n} found · {sel} selected": "{n} נמצאו · {sel} נבחרו",
   "{n} photos": "{n} תמונות",
   "{n} photos in {} are hidden by the filters above": "{n} תמונות ב-{} מוסתרות על ידי המסננים שלמעלה",

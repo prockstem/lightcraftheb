@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  LightCraft MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
+  Epic Light MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
 
     wix build lightcraft.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d IconPath=... -o out.msi
 
-  Per-machine install into Program Files, a Start Menu shortcut, `.pcraft` owned by LightCraft,
-  and LightCraft offered under "Open with" for PSD/PSB and the image formats it reads (without
+  Per-machine install into Program Files, a Start Menu shortcut, `.pcraft` owned by Epic Light,
+  and Epic Light offered under "Open with" for PSD/PSB and the image formats it reads (without
   taking over the user's default app for them).
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package
-      Name="LightCraft"
-      Manufacturer="Learning Machines LLC"
+      Name="Epic Light"
+      Manufacturer="prockstem"
       Version="$(var.Version)"
-      UpgradeCode="229BB552-5EFD-479A-BA86-8CB6D926390C"
+      UpgradeCode="4016743C-A0C1-4E8B-99CC-0CDFFCC55903"
       Scope="perMachine"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="LightCraft image editor" Manufacturer="Learning Machines LLC" />
+    <SummaryInformation Description="Epic Light photo library and raw developer" Manufacturer="prockstem" />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
-        DowngradeErrorMessage="A newer version of LightCraft is already installed." />
+        DowngradeErrorMessage="A newer version of Epic Light is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <Icon Id="LightcraftIcon" SourceFile="$(var.IconPath)" />
     <Property Id="ARPPRODUCTICON" Value="LightcraftIcon" />
-    <Property Id="ARPURLINFOABOUT" Value="https://getartcraft.com/apps/lightcraft" />
-    <Property Id="ARPURLUPDATEINFO" Value="https://getartcraft.com/apps/lightcraft" />
-    <Property Id="ARPHELPLINK" Value="https://discord.gg/artcraft" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/prockstem/lightcraftheb" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/prockstem/lightcraftheb" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/prockstem/lightcraftheb/issues" />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
-      <Directory Id="INSTALLFOLDER" Name="LightCraft" />
+      <Directory Id="INSTALLFOLDER" Name="Epic Light" />
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder" />
 
-    <Feature Id="Main" Title="LightCraft" Level="1">
+    <Feature Id="Main" Title="Epic Light" Level="1">
       <ComponentGroupRef Id="LightcraftFiles" />
     </Feature>
   </Package>
@@ -44,8 +44,8 @@
     <ComponentGroup Id="LightcraftFiles" Directory="INSTALLFOLDER">
       <Component Id="LightcraftApp" Guid="8A1D3A39-F7C1-47B1-97AE-40C80BF82F4A">
         <File Id="LightcraftExe" Source="$(var.BinDir)\lightcraft.exe" KeyPath="yes">
-          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="LightCraft"
-              Description="LightCraft image editor" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
+          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Epic Light"
+              Description="Epic Light photo library and raw developer" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
               Icon="LightcraftIcon" IconIndex="0" />
         </File>
 

@@ -47,7 +47,7 @@ jobs:
       - name: XML, desktop entry, AppStream, Flatpak manifest
         run: |
           xmllint --noout packaging/windows/lightcraft.wxs packaging/macos/*.plist* packaging/linux/*.xml*
-          desktop-file-validate packaging/linux/ai.storyteller.lightcraft.desktop
-          sed -e 's/@VERSION@/0.0.0/' -e 's/@DATE@/2026-01-01/' packaging/linux/ai.storyteller.lightcraft.metainfo.xml.in >"$RUNNER_TEMP/ai.storyteller.lightcraft.metainfo.xml"
-          appstreamcli validate --no-net --explain "$RUNNER_TEMP/ai.storyteller.lightcraft.metainfo.xml"
-          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.storyteller.lightcraft.yml')); assert m['id'] == 'ai.storyteller.lightcraft' and m['command'] == 'lightcraft'"
+          desktop-file-validate packaging/linux/io.github.prockstem.epiclight.desktop
+          sed -e 's/@VERSION@/0.0.0/' -e 's/@DATE@/2026-01-01/' packaging/linux/io.github.prockstem.epiclight.metainfo.xml.in >"$RUNNER_TEMP/io.github.prockstem.epiclight.metainfo.xml"
+          appstreamcli validate --no-net --explain "$RUNNER_TEMP/io.github.prockstem.epiclight.metainfo.xml"
+          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/io.github.prockstem.epiclight.yml')); assert m['id'] == 'io.github.prockstem.epiclight' and m['command'] == 'lightcraft'"
