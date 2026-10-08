@@ -112,15 +112,23 @@ pub fn install_fonts(ctx: &egui::Context) {
     fonts.font_data.insert("Inter-SemiBold".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf"))));
     fonts.font_data.insert("Japanese".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/BIZUDPGothic-Regular.ttf"))));
     fonts.font_data.insert("Japanese-Bold".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/BIZUDPGothic-Bold.ttf"))));
+    fonts.font_data.insert("Hebrew".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/NotoSansHebrew-Regular.ttf"))));
+    fonts
+        .font_data
+        .insert("Hebrew-SemiBold".into(), Arc::new(FontData::from_static(include_bytes!("../../../assets/fonts/NotoSansHebrew-SemiBold.ttf"))));
     let fallback: Vec<String> = fonts.families.get(&FontFamily::Proportional).cloned().unwrap_or_default();
-    let mut prop = vec!["Inter".to_string(), "Japanese".to_string()];
+    let mut prop = vec!["Inter".to_string(), "Hebrew".to_string(), "Japanese".to_string()];
     prop.extend(fallback.clone());
     fonts.families.insert(FontFamily::Proportional, prop);
-    let mut semi = vec!["Inter-SemiBold".to_string(), "Japanese-Bold".to_string()];
+    let mut semi = vec!["Inter-SemiBold".to_string(), "Hebrew-SemiBold".to_string(), "Japanese-Bold".to_string()];
     semi.extend(fallback);
     fonts.families.insert(FontFamily::Name(FONT_SEMIBOLD.into()), semi);
-    fonts.families.entry(FontFamily::Monospace).or_default().push("Japanese".into());
+    let mono = fonts.families.entry(FontFamily::Monospace).or_default();
+    mono.push("Hebrew".into());
+    mono.push("Japanese".into());
     ctx.set_fonts(fonts);
+    // egui draws text left to right only; Hebrew rows are put into visual order (rtl_text.rs).
+    crate::rtl_text::install(ctx);
 }
 
 pub fn apply(ctx: &egui::Context) {

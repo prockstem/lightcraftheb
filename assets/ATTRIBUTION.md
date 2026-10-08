@@ -22,6 +22,7 @@ covers a whole directory), or if a licence file referenced in the Licence column
 | `docs/brand/` (artcraft-logo and artcraft-mark, SVG and PNG) | ArtCraft wordmark and mark | ArtCraft Team | original work (https://getartcraft.com/) | ArtCraft trademark, see `docs/brand/LICENSE-brand.txt` (not open source) | 2026-10-01 | none |
 
 | `assets/fonts/BIZUDPGothic-*.ttf` | BIZ UDPGothic (Regular, Bold) | Morisawa / BIZ UDGothic Project Authors | https://github.com/googlefonts/morisawa-biz-ud-gothic/tree/18934af56b9c003ca58c54bffbf226848cb11032 | SIL Open Font License 1.1 (`assets/fonts/OFL-BIZUDGothic.txt`) | 2026-10-05 | none |
+| `assets/fonts/NotoSansHebrew-*.ttf` | Noto Sans Hebrew 3.001 (Regular, SemiBold) | The Noto Project Authors (Google) | https://github.com/notofonts/hebrew (static hinted TTFs from https://github.com/notofonts/notofonts.github.io/tree/main/fonts/NotoSansHebrew/hinted/ttf) | SIL Open Font License 1.1 (`assets/fonts/OFL-NotoSansHebrew.txt`) | 2026-10-08 | none |
 
 Notes
 - Fonts authored or published by Adobe (Source Sans/Serif/Code, Source Han, …) are not used, even though some are

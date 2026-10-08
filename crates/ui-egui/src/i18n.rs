@@ -3,7 +3,7 @@ use std::{cell::Cell, collections::BTreeMap, sync::OnceLock};
 
 use serde::{Deserialize, Serialize};
 
-include!(concat!(env!("OUT_DIR"), "/ja-formats.rs"));
+include!(concat!(env!("OUT_DIR"), "/formats.rs"));
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Language {
@@ -12,25 +12,36 @@ pub enum Language {
     En,
     #[serde(rename = "ja")]
     Ja,
+    #[serde(rename = "he")]
+    He,
 }
 
 impl Language {
-    pub const ALL: [Self; 2] = [Self::En, Self::Ja];
+    pub const ALL: [Self; 3] = [Self::En, Self::Ja, Self::He];
     pub fn name(self) -> &'static str {
         match self {
             Self::En => "English",
             Self::Ja => "日本語",
+            Self::He => "עברית",
         }
     }
     pub fn parse(code: &str) -> Option<Self> {
         match code {
             "en" => Some(Self::En),
             "ja" => Some(Self::Ja),
+            "he" => Some(Self::He),
             _ => None,
         }
     }
+    /// Is text in this language written right to left?
+    pub fn is_rtl(self) -> bool {
+        self == Self::He
+    }
     pub fn tr(self, source: &str) -> &str {
-        if self == Self::Ja { japanese().get(source).map(String::as_str).unwrap_or(source) } else { source }
+        match catalog(self) {
+            Some(messages) => messages.get(source).map(String::as_str).unwrap_or(source),
+            None => source,
+        }
     }
 }
 
@@ -39,31 +50,51 @@ thread_local! {
 }
 
 pub fn default_language() -> Language {
-    if std::env::var("LIGHTCRAFT_LANGUAGE").as_deref() == Ok("ja") { Language::Ja } else { Language::En }
+    std::env::var("LIGHTCRAFT_LANGUAGE").ok().and_then(|code| Language::parse(&code)).unwrap_or_default()
 }
 
 pub fn set_language(language: Language) {
     LANGUAGE.with(|value| value.set(language));
 }
 
+/// The language the UI is drawn in on this thread.
+pub fn current() -> Language {
+    LANGUAGE.with(Cell::get)
+}
+
 pub fn is_japanese() -> bool {
-    LANGUAGE.with(|value| value.get() == Language::Ja)
+    current() == Language::Ja
+}
+
+fn catalog(language: Language) -> Option<&'static BTreeMap<String, String>> {
+    match language {
+        Language::En => None,
+        Language::Ja => Some(japanese()),
+        Language::He => Some(hebrew()),
+    }
 }
 
 fn japanese() -> &'static BTreeMap<String, String> {
     static MESSAGES: OnceLock<BTreeMap<String, String>> = OnceLock::new();
-    MESSAGES.get_or_init(|| {
-        serde_json::from_str(include_str!("../locales/ja.json")).unwrap_or_else(|error| {
-            log::error!("Invalid Japanese message catalog: {error}");
-            BTreeMap::new()
-        })
+    MESSAGES.get_or_init(|| load("Japanese", include_str!("../locales/ja.json")))
+}
+
+fn hebrew() -> &'static BTreeMap<String, String> {
+    static MESSAGES: OnceLock<BTreeMap<String, String>> = OnceLock::new();
+    MESSAGES.get_or_init(|| load("Hebrew", include_str!("../locales/he.json")))
+}
+
+fn load(name: &str, json: &str) -> BTreeMap<String, String> {
+    serde_json::from_str(json).unwrap_or_else(|error| {
+        log::error!("Invalid {name} message catalog: {error}");
+        BTreeMap::new()
     })
 }
 
 /// Translate a built-in display label, preserving unknown labels verbatim.
 /// Never call this on editable user text, filenames or command identifiers.
 pub fn tr(source: &str) -> &str {
-    if is_japanese() { japanese().get(source).map(String::as_str).unwrap_or(source) } else { source }
+    current().tr(source)
 }
 
 #[cfg(test)]
@@ -76,6 +107,52 @@ mod tests {
         for key in ["Import Photos…", "Export…", "Exposure", "White Balance", "Settings", "Language"] {
             assert!(messages.get(key).is_some_and(|value| !value.is_empty() && value != key), "{key}");
         }
+    }
+
+    #[test]
+    fn hebrew_catalog_covers_every_japanese_string() {
+        let ja: BTreeMap<String, String> = serde_json::from_str(include_str!("../locales/ja.json")).unwrap();
+        let he: BTreeMap<String, String> = serde_json::from_str(include_str!("../locales/he.json")).unwrap();
+        let missing: Vec<_> = ja.keys().filter(|k| he.get(*k).is_none_or(|v| v.is_empty())).collect();
+        assert!(missing.is_empty(), "untranslated: {missing:?}");
+        let jf: BTreeMap<String, String> = serde_json::from_str(include_str!("../locales/ja-formats.json")).unwrap();
+        let hf: BTreeMap<String, String> = serde_json::from_str(include_str!("../locales/he-formats.json")).unwrap();
+        assert_eq!(jf.keys().collect::<Vec<_>>(), hf.keys().collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn hebrew_translates_labels_and_formats() {
+        set_language(Language::He);
+        assert!(current().is_rtl());
+        assert_eq!(tr("Exposure"), "חשיפה");
+        assert_eq!(tr("my-photo.jpg"), "my-photo.jpg");
+        assert_eq!(tr_format!("{n} photo{}", "s", n = 12), "תמונות: 12");
+        assert_eq!(tr_format!("Exported {ok} of {total} photo{}", "s", ok = 4, total = 12), "יוצאו 4 מתוך 12 תמונות");
+        assert_eq!(tr_format!("Added {n} photo{} to “{}”", "s", "Trip", n = 3), "נוספו אל “Trip”: 3");
+        assert_eq!(Language::parse("he"), Some(Language::He));
+        assert_eq!(serde_json::to_string(&Language::He).unwrap(), "\"he\"");
+        set_language(Language::En);
+        assert_eq!(tr("Exposure"), "Exposure");
+    }
+
+    #[test]
+    fn both_font_weights_cover_the_hebrew_catalog() {
+        let ctx = egui::Context::default();
+        crate::theme::install_fonts(&ctx);
+        let mut out = ctx.run_ui(egui::RawInput::default(), |_| {});
+        out.textures_delta.clear();
+        ctx.fonts_mut(|fonts| {
+            for family in [egui::FontFamily::Proportional, egui::FontFamily::Name(crate::theme::FONT_SEMIBOLD.into())] {
+                let font = egui::FontId::new(13.0, family);
+                // Characters the translation adds (symbols copied from the English source are the
+                // English UI's concern).
+                for (source, message) in hebrew() {
+                    for ch in message.chars().filter(|ch| !ch.is_whitespace() && !source.contains(*ch)) {
+                        assert!(fonts.has_glyph(&font, ch), "Missing glyph {ch} in {message}");
+                    }
+                }
+            }
+        });
     }
 
     #[test]
